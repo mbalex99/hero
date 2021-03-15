@@ -1,6 +1,6 @@
 # README
-
 ## Quick Check
+Why is `singleline` so much more performant?
 
 * See: https://mbalex99.github.io/hero/multiline
 * See: https://mbalex99.github.io/hero/singleline
