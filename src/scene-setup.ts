@@ -64,7 +64,6 @@ const bloomPass = new UnrealBloomPass(
 
 composer.addPass(renderScene);
 composer.addPass(effectFXAA);
-composer.addPass(effectFXAA);
 composer.addPass(bloomPass);
 composer.addPass(copyShader);
 

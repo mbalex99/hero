@@ -3,7 +3,10 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
   mode: "development",
-  entry: "./src/index.ts",
+  entry: {
+    multiline: "./src/multiline.ts",
+    singleline: "./src/singleline.ts",
+  },
   module: {
     rules: [
       {
@@ -28,7 +31,7 @@ module.exports = {
     extensions: [".tsx", ".ts", ".js"],
   },
   output: {
-    filename: "bundle.js",
+    filename: "[name].js",
     path: path.resolve(__dirname, "dist"),
   },
   devServer: {
@@ -36,5 +39,14 @@ module.exports = {
     compress: true,
     port: 9000,
   },
-  plugins: [new HtmlWebpackPlugin()],
+  plugins: [
+    new HtmlWebpackPlugin({
+      chunks: ["multiline"],
+      filename: "./multiline.html",
+    }),
+    new HtmlWebpackPlugin({
+      chunks: ["singleline"],
+      filename: "./singleline.html",
+    }),
+  ],
 };

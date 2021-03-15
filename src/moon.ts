@@ -13,7 +13,7 @@ export class Moon extends Mesh {
   angle: Vector3;
   nucleus: Object3D;
 
-  constructor(nucleus: Object3D) {
+  constructor(nucleus: Object3D, distance?: number) {
     let randomRadius = _.random(0.005, 0.025);
     const geometry = new SphereGeometry(randomRadius, 40, 40);
     const material = new MeshBasicMaterial({
@@ -22,10 +22,10 @@ export class Moon extends Mesh {
       transparent: true,
     });
     super(geometry, material);
-    this.distance = _.random(0.5, 2.5);
+    this.distance = distance || _.random(0.5, 2.5);
     this.orbitSpeed = _.random(0.1, 0.5) * _.sample([1, -1])!;
     this.nucleus = nucleus;
-    
+    this.position.set(this.distance + this.nucleus.position.x, this.distance + this.nucleus.position.y, this.distance + this.nucleus.position.z)
 
     this.angle = new Vector3(
       Math.random(),
