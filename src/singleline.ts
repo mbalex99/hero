@@ -3,6 +3,7 @@ import {
   Line,
   BufferGeometry,
   Float32BufferAttribute,
+  LineBasicMaterial,
 } from "three";
 import { Moon } from "./moon";
 import { camera, clock, composer, renderer, scene, plane } from "./scene-setup";
@@ -39,7 +40,13 @@ let line: Line;
     "position",
     new Float32BufferAttribute(positions, 3)
   );
-  line = new Line(bufferGeometry);
+  const material = new LineBasicMaterial({
+    color: 0xffffff,
+    linewidth: 1,
+    transparent: true,
+    opacity: 0.1
+  });
+  line = new Line(bufferGeometry, material);
   scene.add(line);
 }
 
