@@ -7,7 +7,7 @@ import {
   LineDashedMaterial,
 } from "three";
 import { Moon } from "./moon";
-import { camera, clock, composer, renderer, scene, plane } from "./scene-setup";
+import { camera, clock, composer, renderer, scene } from "./scene-setup";
 import { Sun } from "./sun";
 
 document.title = "Singleline";

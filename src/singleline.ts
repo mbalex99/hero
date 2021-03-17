@@ -1,15 +1,18 @@
 import _ from "lodash";
+import * as THREE from "three";
 import {
-  Line,
   BufferGeometry,
   Float32BufferAttribute,
   LineBasicMaterial,
+  LineSegments,
+  BufferAttribute,
+  DynamicDrawUsage,
 } from "three";
 import { Moon } from "./moon";
-import { camera, clock, composer, renderer, scene, plane } from "./scene-setup";
+import { camera, clock, composer, renderer, scene } from "./scene-setup";
 import { Sun } from "./sun";
 
-document.title = "Singleline"
+document.title = "Singleline";
 
 const NUMBER_OF_MOONS = 50;
 
@@ -24,30 +27,35 @@ for (let index = 0; index < NUMBER_OF_MOONS; index++) {
   moons.push(moon);
 }
 
-let line: Line;
+let linesMesh: LineSegments;
+let colors: Float32Array;
+let positions: Float32Array;
+const maxParticleCount = 1000;
 {
-  let positions: number[] = [];
-  for (let moonA of moons) {
-    for (let moonB of moons) {
-      if (moonA != moonB) {
-        positions.push(moonA.position.x, moonA.position.y, moonA.position.z);
-        positions.push(moonB.position.x, moonB.position.y, moonB.position.z);
-      }
-    }
-  }
-  let bufferGeometry = new BufferGeometry();
-  bufferGeometry.setAttribute(
+  const segments = maxParticleCount * maxParticleCount;
+  colors = new Float32Array(segments * 3);
+  positions = new Float32Array(segments * 3);
+
+  const geometry = new BufferGeometry();
+  geometry.setAttribute(
     "position",
-    new Float32BufferAttribute(positions, 3)
+    new BufferAttribute(positions, 3).setUsage(DynamicDrawUsage)
   );
+  geometry.setAttribute(
+    "color",
+    new BufferAttribute(colors, 3).setUsage(DynamicDrawUsage)
+  );
+  geometry.computeBoundingSphere();
+  geometry.setDrawRange(0, 0);
+
   const material = new LineBasicMaterial({
-    color: 0xffffff,
-    linewidth: 1,
+    vertexColors: true,
+    blending: THREE.AdditiveBlending,
     transparent: true,
-    opacity: 0.1
   });
-  line = new Line(bufferGeometry, material);
-  scene.add(line);
+
+  linesMesh = new LineSegments(geometry, material);
+  scene.add(linesMesh);
 }
 
 // window resize
@@ -62,7 +70,7 @@ window.addEventListener("resize", () => {
 
 // begin animation
 const animate = function () {
-  requestAnimationFrame(animate);
+  
   var t = clock.getElapsedTime();
 
   for (let moon of moons) {
@@ -70,22 +78,21 @@ const animate = function () {
   }
 
   // update line
-  let positions: number[] = [];
-  for (let moonA of moons) {
-    for (let moonB of moons) {
-      if (moonA != moonB) {
-        positions.push(moonA.position.x, moonA.position.y, moonA.position.z);
-        positions.push(moonB.position.x, moonB.position.y, moonB.position.z);
-      }
-    }
-  }
-  line.geometry.setAttribute(
-    "position",
-    new Float32BufferAttribute(positions, 3)
-  );
+
+  // let positions = new Float32Array(moons.length * moons.length)
+
   
-  
-  composer.render();
+
+  // linesMesh.geometry.setDrawRange(0, numConnected * 2);
+  // linesMesh.geometry.attributes.position.needsUpdate = true;
+  // linesMesh.geometry.attributes.color.needsUpdate = true;
+
+  requestAnimationFrame(animate);
+  render();
 };
+
+const render = function() {
+  composer.render();
+}
 
 animate();

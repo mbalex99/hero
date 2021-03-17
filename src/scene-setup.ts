@@ -1,46 +1,49 @@
 import "./index.scss";
-import * as THREE from "three";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass";
 import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass";
-import { LuminosityShader } from "three/examples/jsm/shaders/LuminosityShader";
 import { FXAAShader } from "three/examples/jsm/shaders/FXAAShader";
 import { CopyShader } from "three/examples/jsm/shaders/CopyShader";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { Plane } from "three";
+import {
+  Clock,
+  LinearToneMapping,
+  PerspectiveCamera,
+  Plane,
+  PointLight,
+  Scene,
+  Vector2,
+  WebGLRenderer,
+} from "three";
 
-const clock = new THREE.Clock();
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(
-  40,
+const clock = new Clock();
+const scene = new Scene();
+const camera = new PerspectiveCamera(
+  45,
   window.innerWidth / window.innerHeight,
   1,
-  100
+  4000
 );
+camera.position.z = 1750;
 
-const renderer = new THREE.WebGLRenderer({
-  antialias: true
+const renderer = new WebGLRenderer({
+  antialias: true,
 });
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.toneMapping = THREE.LinearToneMapping;
-renderer.setClearColor(0x000000,0.0);
-document.body.appendChild(renderer.domElement);
-
-
+renderer.toneMapping = LinearToneMapping;
+renderer.setClearColor(0x000000, 0.0);
+document.body.prepend(renderer.domElement);
 
 // controls
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.maxPolarAngle = Math.PI * 0.5;
-controls.minDistance = 1;
-controls.maxDistance = 10;
-
-// camera
-camera.position.z = 3;
+controls.minDistance = 1000;
+controls.maxDistance = 3000;
 
 // light
-const pointLight = new THREE.PointLight(0xffffff, 1);
+const pointLight = new PointLight(0xffffff, 1);
 camera.add(pointLight);
 
 // setup bloom
@@ -58,8 +61,8 @@ const renderScene = new RenderPass(scene, camera);
 const composer = new EffectComposer(renderer);
 
 const bloomPass = new UnrealBloomPass(
-  new THREE.Vector2(window.innerWidth, window.innerHeight),
-  2,
+  new Vector2(window.innerWidth, window.innerHeight),
+  1,
   1,
   0.1
 );
@@ -69,13 +72,4 @@ composer.addPass(effectFXAA);
 composer.addPass(bloomPass);
 composer.addPass(copyShader);
 
-const plane = new Plane();
-
-export {
-  camera,
-  scene,
-  renderer,
-  composer,
-  clock,
-  plane
-}
+export { camera, scene, renderer, composer, clock };

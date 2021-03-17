@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { Connection } from "./connection";
 import { Moon } from "./moon";
-import { camera, clock, composer, renderer, scene, plane } from "./scene-setup";
+import { camera, clock, composer, renderer, scene } from "./scene-setup";
 import { Sun } from "./sun";
 
 document.title = "Multiline"

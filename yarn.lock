@@ -61,10 +61,10 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-14.14.34.tgz#07935194fc049069a1c56c0c274265abeddf88da"
   integrity sha512-dBPaxocOK6UVyvhbnpFIj2W+S+1cBTkHQbFQfeeJhoKFbzYcVUGHvddeWPSucKATb3F0+pgDq0i6ghEaZjsugA==
 
-"@types/three@^0.126.0":
-  version "0.126.0"
-  resolved "https://registry.yarnpkg.com/@types/three/-/three-0.126.0.tgz#58f80e13ab5f8084741e8a9d7e804b9a31039043"
-  integrity sha512-C7cFOWQpcGQAJ0PJSdU6ncZFn51fWKaV8o1Dz2fvikFRGWY8cI5/M/q5JHX7/TzCfMRadLP690Ksh8QvanSW8Q==
+"@types/three@^0.126.1":
+  version "0.126.1"
+  resolved "https://registry.yarnpkg.com/@types/three/-/three-0.126.1.tgz#f53450d4218a7c8bfb17af062f9d8473c8e241e0"
+  integrity sha512-GR7e3d9CYYmwIR3HDiRZDFpoHIp2Vg5IbULcIjL296C8VbjruGwJ7Br1GTBkslEVfkezKrtJTf7KuqoIt3oYTg==
 
 "@webassemblyjs/ast@1.11.0":
   version "1.11.0"

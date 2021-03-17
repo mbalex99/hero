@@ -7,6 +7,7 @@ module.exports = {
     multiline: "./src/multiline.ts",
     singleline: "./src/singleline.ts",
     simple: "./src/simple.ts",
+    linesegments: "./src/linesegments.ts",
   },
   module: {
     rules: [
@@ -52,6 +53,10 @@ module.exports = {
     new HtmlWebpackPlugin({
       chunks: ["simple"],
       filename: "./simple.html",
+    }),
+    new HtmlWebpackPlugin({
+      chunks: ["linesegments"],
+      filename: "./linesegments.html",
     }),
   ],
 };
