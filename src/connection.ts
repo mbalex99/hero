@@ -11,14 +11,14 @@ import {
 export class Connection extends LineSegments {
   startObject: Object3D;
   endObject: Object3D;
-  material: LineBasicMaterial
+  material: LineBasicMaterial;
 
   constructor(startObject: Object3D, endObject: Object3D) {
     const material = new LineBasicMaterial({
       color: 0xffffff,
       linewidth: 1,
       transparent: true,
-      opacity: 0.1
+      opacity: 0.1,
     });
 
     const points = [];
@@ -29,16 +29,13 @@ export class Connection extends LineSegments {
     super(bufferGeometry, material);
     this.startObject = startObject;
     this.endObject = endObject;
-    this.material = material
+    this.material = material;
   }
 
   update() {
-    
     this.geometry.setFromPoints([
       this.startObject.position,
       this.endObject.position,
     ]);
-    
-    
   }
 }
