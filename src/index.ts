@@ -6,9 +6,8 @@ import {
   BufferGeometry,
   DynamicDrawUsage,
   Group,
-  LineDashedMaterial,
+  LineBasicMaterial,
   LineSegments,
-  Points,
   PointsMaterial,
 } from "three";
 import { camera, clock, composer, renderer, scene } from "./scene-setup";
@@ -24,9 +23,6 @@ let sun: Sun;
 let moons: Moon[] = [];
 
 const maxParticleCount = 100;
-let particleCount = 80;
-const r = 1200;
-const rHalf = r / 2;
 
 const effectController = {
   minDistance: 150,
@@ -51,14 +47,6 @@ function init() {
   sun = new Sun();
   scene.add(sun);
 
-  const pMaterial = new PointsMaterial({
-    color: 0xffffff,
-    size: 1,
-    blending: AdditiveBlending,
-    transparent: true,
-    sizeAttenuation: false,
-  });
-
   for (let i = 0; i < maxParticleCount; i++) {
     const moon = new Moon(sun, _.random(150, 900));
     moons.push(moon);
@@ -80,9 +68,10 @@ function init() {
 
   geometry.setDrawRange(0, 0);
 
-  const material = new LineDashedMaterial({
+  const material = new LineBasicMaterial({
     vertexColors: true,
     blending: AdditiveBlending,
+    linewidth: 500,
     transparent: true,
   });
 
