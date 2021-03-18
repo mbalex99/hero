@@ -12,9 +12,10 @@ export class Moon extends Mesh {
   orbitSpeed: number;
   angle: Vector3;
   nucleus: Object3D;
+  numConnections: number;
 
   constructor(nucleus: Object3D, distance?: number) {
-    let randomRadius = _.random(0.005, 0.025);
+    let randomRadius = _.random(5, 10);
     const geometry = new SphereGeometry(randomRadius, 40, 40);
     const material = new MeshBasicMaterial({
       color: _.sample([0xf856b3, 0xff9500, 0x00bc7f]),
@@ -32,6 +33,7 @@ export class Moon extends Mesh {
       Math.random(),
       Math.random()
     ).normalize();
+    this.numConnections = 0
   }
 
   update(time: number) {
@@ -39,8 +41,5 @@ export class Moon extends Mesh {
     this.position.y = Math.sin(this.orbitSpeed * time) * this.distance + this.nucleus.position.y
     this.position.z = Math.cos(this.orbitSpeed * time) * this.distance + this.nucleus.position.z
     this.position.applyAxisAngle(this.angle, this.orbitSpeed)
-    // this.position.sub(this.nucleus.position);
-    // this.position.applyAxisAngle(this.angle, this.orbitSpeed);
-    // this.position.add(this.nucleus.position);
   }
 }

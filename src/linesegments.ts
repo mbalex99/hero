@@ -1,39 +1,30 @@
-import "./index.scss"
+import "./index.scss";
 
 import {
   AdditiveBlending,
-  BoxGeometry,
-  BoxHelper,
   BufferAttribute,
   BufferGeometry,
   DynamicDrawUsage,
   Group,
   LineDashedMaterial,
   LineSegments,
-  Mesh,
-  PerspectiveCamera,
   Points,
   PointsMaterial,
-  Scene,
-  sRGBEncoding,
-  Vector3,
-  WebGLRenderer,
 } from "three";
-import { camera, composer, renderer, scene } from './scene-setup'
-import { Sun } from "./sun"
+import { camera, clock, composer, renderer, scene } from "./scene-setup";
+import { Sun } from "./sun";
+import { Moon } from "./moon";
+import _ from "lodash";
 
 let group: Group;
-let container: HTMLElement;
-const particlesData: any[] = [];
-let positions, colors;
-let particles;
-let pointCloud: Points;
-let particlePositions: Float32Array;
+let positions: Float32Array;
+let colors: Float32Array;
 let linesMesh: LineSegments;
-let sun: Sun
+let sun: Sun;
+let moons: Moon[] = [];
 
-const maxParticleCount = 1000;
-let particleCount = 100;
+const maxParticleCount = 100;
+let particleCount = 80;
 const r = 1200;
 const rHalf = r / 2;
 
@@ -48,7 +39,6 @@ init();
 animate();
 
 function init() {
-
   group = new Group();
   scene.add(group);
 
@@ -57,46 +47,23 @@ function init() {
   positions = new Float32Array(segments * 3);
   colors = new Float32Array(segments * 3);
 
+  //
+  sun = new Sun();
+  scene.add(sun);
+
   const pMaterial = new PointsMaterial({
     color: 0xffffff,
-    size: 30,
+    size: 1,
     blending: AdditiveBlending,
     transparent: true,
     sizeAttenuation: false,
   });
 
-  particles = new BufferGeometry();
-  particlePositions = new Float32Array(maxParticleCount * 3);
-
   for (let i = 0; i < maxParticleCount; i++) {
-    const x = Math.random() * r - r / 2;
-    const y = Math.random() * r - r / 2;
-    const z = Math.random() * r - r / 2;
-
-    particlePositions[i * 3] = x;
-    particlePositions[i * 3 + 1] = y;
-    particlePositions[i * 3 + 2] = z;
-
-    // add it to the geometry
-    particlesData.push({
-      velocity: new Vector3(
-        -1 + Math.random() * 2,
-        -1 + Math.random() * 2,
-        -1 + Math.random() * 2
-      ),
-      numConnections: 0,
-    });
+    const moon = new Moon(sun, _.random(150, 900));
+    moons.push(moon);
+    scene.add(moon);
   }
-
-  particles.setDrawRange(0, particleCount);
-  particles.setAttribute(
-    "position",
-    new BufferAttribute(particlePositions, 3).setUsage(DynamicDrawUsage)
-  );
-
-  // create the particle system
-  pointCloud = new Points(particles, pMaterial);
-  group.add(pointCloud);
 
   const geometry = new BufferGeometry();
 
@@ -120,11 +87,7 @@ function init() {
   });
 
   linesMesh = new LineSegments(geometry, material);
-  group.add(linesMesh);
-
-  //
-  sun = new Sun()
-  scene.add(sun)
+  scene.add(linesMesh);
 
   window.addEventListener("resize", onWindowResize);
 }
@@ -139,65 +102,43 @@ function animate() {
   let vertexpos = 0;
   let colorpos = 0;
   let numConnected = 0;
+  var t = clock.getElapsedTime();
 
-  for (let i = 0; i < particleCount; i++) particlesData[i].numConnections = 0;
+  moons.forEach((m) => m.update(t));
 
-  for (let i = 0; i < particleCount; i++) {
-    // get the particle
-    const particleData = particlesData[i];
+  for (let i = 0; i < moons.length; i++) moons[i].numConnections = 0;
 
-    particlePositions[i * 3] += particleData.velocity.x;
-    particlePositions[i * 3 + 1] += particleData.velocity.y;
-    particlePositions[i * 3 + 2] += particleData.velocity.z;
-
-    if (
-      particlePositions[i * 3 + 1] < -rHalf ||
-      particlePositions[i * 3 + 1] > rHalf
-    )
-      particleData.velocity.y = -particleData.velocity.y;
-
-    if (particlePositions[i * 3] < -rHalf || particlePositions[i * 3] > rHalf)
-      particleData.velocity.x = -particleData.velocity.x;
-
-    if (
-      particlePositions[i * 3 + 2] < -rHalf ||
-      particlePositions[i * 3 + 2] > rHalf
-    )
-      particleData.velocity.z = -particleData.velocity.z;
-
-    if (
-      effectController.limitConnections &&
-      particleData.numConnections >= effectController.maxConnections
-    )
-      continue;
+  for (let i = 0; i < moons.length; i++) {
+    let moonA = moons[i];
 
     // Check collision
-    for (let j = i + 1; j < particleCount; j++) {
-      const particleDataB = particlesData[j];
+    for (let j = i + 1; j < moons.length; j++) {
+      let moonB = moons[j];
       if (
         effectController.limitConnections &&
-        particleDataB.numConnections >= effectController.maxConnections
+        moonB.numConnections >= effectController.maxConnections
       )
         continue;
 
-      const dx = particlePositions[i * 3] - particlePositions[j * 3];
-      const dy = particlePositions[i * 3 + 1] - particlePositions[j * 3 + 1];
-      const dz = particlePositions[i * 3 + 2] - particlePositions[j * 3 + 2];
+      const dx = moonA.position.x - moonB.position.x;
+      const dy = moonA.position.y - moonB.position.y;
+      const dz = moonA.position.z - moonB.position.z;
+
       const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
 
       if (dist < effectController.minDistance) {
-        particleData.numConnections++;
-        particleDataB.numConnections++;
+        moonA.numConnections++;
+        moonB.numConnections++;
 
         const alpha = 1.0 - dist / effectController.minDistance;
 
-        positions[vertexpos++] = particlePositions[i * 3];
-        positions[vertexpos++] = particlePositions[i * 3 + 1];
-        positions[vertexpos++] = particlePositions[i * 3 + 2];
+        positions[vertexpos++] = moonA.position.x;
+        positions[vertexpos++] = moonA.position.y;
+        positions[vertexpos++] = moonA.position.z;
 
-        positions[vertexpos++] = particlePositions[j * 3];
-        positions[vertexpos++] = particlePositions[j * 3 + 1];
-        positions[vertexpos++] = particlePositions[j * 3 + 2];
+        positions[vertexpos++] = moonB.position.x;
+        positions[vertexpos++] = moonB.position.y;
+        positions[vertexpos++] = moonB.position.z;
 
         colors[colorpos++] = alpha;
         colors[colorpos++] = alpha;
@@ -215,8 +156,6 @@ function animate() {
   linesMesh.geometry.setDrawRange(0, numConnected * 2);
   linesMesh.geometry.attributes.position.needsUpdate = true;
   linesMesh.geometry.attributes.color.needsUpdate = true;
-
-  pointCloud.geometry.attributes.position.needsUpdate = true;
 
   requestAnimationFrame(animate);
   render();
