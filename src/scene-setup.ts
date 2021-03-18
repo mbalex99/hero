@@ -62,7 +62,7 @@ const composer = new EffectComposer(renderer);
 
 const bloomPass = new UnrealBloomPass(
   new Vector2(window.innerWidth, window.innerHeight),
-  1,
+  0.5,
   1,
   0.1
 );

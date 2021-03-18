@@ -52,13 +52,6 @@ function init() {
   group = new Group();
   scene.add(group);
 
-  // const helper = new BoxHelper(new Mesh(new BoxGeometry(r, r, r)));
-
-  // helper.material.color.setHex(0x101010);
-  // helper.material.blending = AdditiveBlending;
-  // helper.material.transparent = true;
-  // group.add(helper);
-
   const segments = maxParticleCount * maxParticleCount;
 
   positions = new Float32Array(segments * 3);
