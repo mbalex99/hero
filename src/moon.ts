@@ -12,9 +12,13 @@ export class Moon extends Mesh {
   orbitSpeed: number;
   angle: Vector3;
   nucleus: Object3D;
+  numConnections: number;
+  directionX: number;
+  directionY: number;
+  directionZ: number;
 
   constructor(nucleus: Object3D, distance?: number) {
-    let randomRadius = _.random(0.005, 0.025);
+    let randomRadius = _.random(5, 10);
     const geometry = new SphereGeometry(randomRadius, 40, 40);
     const material = new MeshBasicMaterial({
       color: _.sample([0xf856b3, 0xff9500, 0x00bc7f]),
@@ -32,15 +36,18 @@ export class Moon extends Mesh {
       Math.random(),
       Math.random()
     ).normalize();
+    this.numConnections = 0
+
+    this.directionX =  _.sample([1, -1])!
+    this.directionY =  _.sample([1, -1])!
+    this.directionZ =  _.sample([1, -1])!
   }
 
   update(time: number) {
-    this.position.x = Math.sin(this.orbitSpeed * time) * this.distance + this.nucleus.position.x
-    this.position.y = Math.sin(this.orbitSpeed * time) * this.distance + this.nucleus.position.y
-    this.position.z = Math.cos(this.orbitSpeed * time) * this.distance + this.nucleus.position.z
+    this.position.x = Math.sin(this.orbitSpeed * time * this.directionX) * this.distance + this.nucleus.position.x 
+    this.position.y = Math.sin(this.orbitSpeed * time * this.directionY) * this.distance + this.nucleus.position.y 
+    this.position.z = Math.cos(this.orbitSpeed * time * this.directionZ) * this.distance + this.nucleus.position.z 
+    this.position.sub(this.nucleus.position)
     this.position.applyAxisAngle(this.angle, this.orbitSpeed)
-    // this.position.sub(this.nucleus.position);
-    // this.position.applyAxisAngle(this.angle, this.orbitSpeed);
-    // this.position.add(this.nucleus.position);
   }
 }
