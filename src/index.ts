@@ -25,7 +25,7 @@ let moons: Moon[] = [];
 const maxParticleCount = 100;
 
 const effectController = {
-  minDistance: 150,
+  minDistance: 200,
   limitConnections: false,
   maxConnections: 20,
   particleCount: 150,
@@ -65,17 +65,16 @@ function init() {
   );
 
   geometry.computeBoundingSphere();
-
   geometry.setDrawRange(0, 0);
 
-  const material = new LineBasicMaterial({
+  const lineBasicMaterial = new LineBasicMaterial({
     vertexColors: true,
     blending: AdditiveBlending,
-    linewidth: 500,
+    linewidth: 4,
     transparent: true,
   });
 
-  linesMesh = new LineSegments(geometry, material);
+  linesMesh = new LineSegments(geometry, lineBasicMaterial);
   scene.add(linesMesh);
 
   window.addEventListener("resize", onWindowResize);
